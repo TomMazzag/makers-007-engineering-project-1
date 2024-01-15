@@ -10,6 +10,7 @@ from lib.booking import Booking
 from datetime import datetime, timedelta
 from lib.booking_request_repository import BookingRequestRepository
 from lib.space_repository import SpaceRepository
+from lib.booking_request import BookingRequest
 
 # Create a new Flask app
 import secrets
@@ -107,6 +108,12 @@ def rent_space(booking_id, space_id):
     connection = get_flask_database_connection(app)
     booking_repo = BookingRepository(connection)
     booking_repo.update_availability(booking_id)
+    request_repo = BookingRequestRepository(connection)
+
+    user_id = get_user_details(connection)
+    user_booking = BookingRequest(None, user_id.id, True, False, booking_id)
+    request_repo.create_booking_request(user_booking)
+
     return redirect(f"/spaces/{space_id}")
 
 
@@ -163,6 +170,17 @@ def logout_user():
     return redirect(f"/spaces")
 
 @app.route("/manage_bookings", methods=["GET"])
+def get_booking_requests_for_user():
+    connection = get_flask_database_connection(app)
+    request_repo = BookingRequestRepository(connection)
+
+    user_details = get_user_details(connection)
+    bookings = request_repo.get_bookings_by_user(user_details.id)
+    logged_in = session.get('logged_in', False)
+    print(bookings)
+
+    return render_template("booking_requests_new.html", logged_in=logged_in, bookings=bookings, user=user_details)
+
 def get_booking_requests():
     connection = get_flask_database_connection(app)
     request_repo = BookingRequestRepository(connection)

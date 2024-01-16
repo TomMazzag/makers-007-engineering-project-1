@@ -98,7 +98,8 @@ class BookingRequestRepository:
                         " JOIN users on booking_requests.guest_id = users.id"
                         " JOIN bookings on booking_requests.booking_id = bookings.id"
                         " JOIN spaces on bookings.space_id = spaces.id"
-                        " WHERE spaces.user_id = %s", [user_id])
+                        " WHERE spaces.user_id = %s"
+                        " ORDER BY pending DESC, date", [user_id])
         bookings_to_return = []
         for booking in user_bookings:
             bookings_to_return.append(

@@ -109,20 +109,27 @@
             <tbody>
                 {% for booking in bookings: %}
                 <tr>
+                    {% if booking.pending %}
+                    <td><b>{{booking.space}}</b></td>
+                    <td><b>{{booking.guest}}</b></td>
+                    <td><b>{{booking.date}}</b></td>
+                    <td><b>{{ 'pending' if booking.pending == True else 'accepted' if booking.accepted == True else 'rejected' }}</b></td>
+                    {% else %}
                     <td>{{booking.space}}</td>
                     <td>{{booking.guest}}</td>
                     <td>{{booking.date}}</td>
-                    <td>{{ 'pending' if booking.pending == True else 'accepted' if booking.available == False else 'rejected' }}</td>
+                    <td>{{ 'pending' if booking.pending == True else 'accepted' if booking.accepted == True else 'rejected' }}</td>
+                    {% endif %}
                     <td class="action-buttons">
                         <div>
-                            <form method="post" action="/manage_bookings/accept/{{request.booking_id}}">
-                                <input type="hidden" name="request.booking_id" value="{{ request.booking_id }}">
+                            <form method="post" action="/manage_bookings/accept/{{booking.id}}">
+                                <input type="hidden" name="booking.id" value="{{ booking.id }}">
                                 <button type="submit" class="accept-button" >Accept</button>
                             </form>
                         </div>
                         <div>
-                            <form method="post" action="/manage_bookings/reject/{{request.booking_id}}">
-                                <input type="hidden" name="request.booking_id" value="{{ request.booking_id }}">
+                            <form method="post" action="/manage_bookings/reject/{{booking.id}}">
+                                <input type="hidden" name="booking.id" value="{{ booking.id }}">
                                 <button type="submit" class="deny-button" >Reject</button>
                             </form>
                         </div>
